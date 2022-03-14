@@ -4,13 +4,13 @@ import java.util.*;
 
 //slang word
 class SlangWord {
-    HashMap<String, Pair> slangMap = new HashMap<String, Pair>();
+    static HashMap<String, Pair> slangMap = new HashMap<String, Pair>();
     static List<Pair> history = new ArrayList<Pair>();
 
     public static void main(String[] args) throws IOException {
         System.out.println("Hello, World!");
         SlangWord slangManager = new SlangWord();
-        slangManager.getSlangWords();
+        getSlangWords();
         System.out.println("Choose an option:");
         System.out.println("1. Look up a word by slang");
         System.out.println("2. Look up a word by meaning");
@@ -25,7 +25,7 @@ class SlangWord {
         System.out.println("11. Exit");
         Scanner scanner = new Scanner(System.in);
         int option = scanner.nextInt();
-        while (option != 11) {
+        if (option != 11) {
             if (option == 1) {
                 System.out.println("Enter a slang word:");
                 String slang = scanner.next();
@@ -74,7 +74,7 @@ class SlangWord {
                     pair.meaning = meaning;
                     System.out.println("Edited successfully");
                 }
-            } else if(option ==6){
+            } else if (option == 6) {
                 System.out.println("Enter a slang word:");
                 String slang = scanner.next();
                 Pair pair = slangManager.slangMap.get(slang);
@@ -86,9 +86,10 @@ class SlangWord {
                 }
             } else if (option == 7) {
                 slangManager.slangMap.clear();
-                history.clear();
+                getSlangWords();
                 System.out.println("Reset successfully");
             } else if (option == 8) {
+                System.out.println("Word of the day is:");
                 Set<String> keys = slangManager.slangMap.keySet();
                 int index = (int) (Math.random() * keys.size());
                 String key = (String) keys.toArray()[index];
@@ -96,34 +97,60 @@ class SlangWord {
                 System.out.println(pair.word + ": " + pair.meaning);
                 history.add(pair);
             } else if (option == 9) {
-                System.out.println("Enter a slang word:");
-                String slang = scanner.next();
-                Pair pair = slangManager.slangMap.get(slang);
-                if (pair == null) {
-                    System.out.println("No such word");
-                } else {
-                    System.out.println("Enter a meaning word:");
-                    String meaning = scanner.next();
-                    if (pair.meaning.equals(meaning)) {
-                        System.out.println("Correct");
+                scanner = new Scanner(System.in);
+                Set<String> keys = slangManager.slangMap.keySet();
+                int index = (int) (Math.random() * keys.size());
+                String key = (String) keys.toArray()[index];
+                Pair pair = slangManager.slangMap.get(key);
+                System.out.println("Slang: " + pair.word);
+                System.out.println("Meaning: ");
+                // a b c d quiz
+                int rightAnswer = index%4;
+                for (int i = 0; i < 4; i++) {
+                    if (i == rightAnswer) {
+                        System.out.println(i + ". " + pair.meaning);
                     } else {
-                        System.out.println("Wrong");
+                        System.out.println(i + ". " + getRandomWord().meaning);
                     }
                 }
+                
+                System.out.println("Your answer:");
+                int answer = scanner.nextInt();
+                if (answer == rightAnswer) {
+                    System.out.println("Correct!");
+                } else {
+                    System.out.println("Wrong!");
+                }
+
             } else if (option == 10) {
-                System.out.println("Enter a meaning word:");
-                String meaning = scanner.next();
                 Set<String> keys = slangManager.slangMap.keySet();
-                for (String key : keys) {
-                    Pair pair = slangManager.slangMap.get(key);
-                    if (pair.meaning.equals(meaning)) {
-                        System.out.println(key + ": " + pair.meaning);
+                int index = (int) (Math.random() * keys.size());
+                String key = (String) keys.toArray()[index];
+                Pair pair = slangManager.slangMap.get(key);
+                System.out.println("Meaning: " + pair.meaning);
+                System.out.println("The word slang is: ");
+                // a b c d quiz
+                int rightAnswer = index%4;
+                for (int i = 0; i < 4; i++) {
+                    if (i == rightAnswer) {
+                        System.out.println(i + ". " + pair.word);
+                    } else {
+                        System.out.println(i + ". " + getRandomWord().word);
+                    }
+                }
+                System.out.println("Your answer:");
+                int answer = scanner.nextInt();
+                if (answer == rightAnswer) {
+                    System.out.println("Correct!");
+                } else {
+                    System.out.println("Wrong!");
+                }
             }
         }
 
     }
 
-    public void getSlangWords() throws IOException {
+    public static void getSlangWords() throws IOException {
         // Open the file
         FileInputStream fstream = new FileInputStream("slang.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
@@ -133,12 +160,12 @@ class SlangWord {
         while ((strLine = br.readLine()) != null) {
             String[] parts = strLine.split("`");
             Pair pair = new Pair();
-            try{pair.word = parts[0];
-            pair.meaning = parts[1];
-            System.out.println(pair.word + "has meaning " + pair.meaning);
-            slangMap.put(pair.word, pair);
-            }
-            catch(Exception e){
+            try {
+                pair.word = parts[0];
+                pair.meaning = parts[1];
+                System.out.println(pair.word + "has meaning " + pair.meaning);
+                slangMap.put(pair.word, pair);
+            } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             }
         }
@@ -146,60 +173,11 @@ class SlangWord {
         // Close the input stream
         fstream.close();
     }
-
-    public String getMeaning(String word) {
-        Pair pair = slangMap.get(word);
-        if (pair == null) {
-            return "";
-        }
-        return pair.meaning;
+    public static Pair getRandomWord() {
+        Set<String> keys = slangMap.keySet();
+        int index = (int) (Math.random() * keys.size());
+        String key = (String) keys.toArray()[index];
+        Pair pair = slangMap.get(key);
+        return pair;
     }
-
-    public String getWord(String meaning) {
-        for (String key : slangMap.keySet()) {
-            Pair pair = slangMap.get(key);
-            if (pair.meaning.equals(meaning)) {
-                return pair.word;
-            }
-        }
-        return "";
-    }
-
-    public void addSlangWord(String word, String meaning) {
-        Pair pair = new Pair();
-        pair.word = word;
-        pair.meaning = meaning;
-        slangMap.put(word, pair);
-    }
-
-    public void removeSlangWord(String word) {
-        slangMap.remove(word);
-    }
-
-    public void printSlangWords() {
-        for (String key : slangMap.keySet()) {
-            Pair pair = slangMap.get(key);
-            System.out.println(pair.word + " has meaning " + pair.meaning);
-        }
-    }
-
-    public void editSlangWord(String word, String meaning) {
-        Pair pair = slangMap.get(word);
-        pair.meaning = meaning;
-    }
-
-    public void randomSlangWord() {
-        Random rand = new Random();
-        int randomNum = rand.nextInt(slangMap.size());
-        int i = 0;
-        for (String key : slangMap.keySet()) {
-            Pair pair = slangMap.get(key);
-            if (i == randomNum) {
-                System.out.println(pair.word + " has meaning " + pair.meaning);
-                return;
-            }
-            i++;
-        }
-    }
-
 }
