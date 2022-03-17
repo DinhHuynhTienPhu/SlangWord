@@ -48,16 +48,27 @@ class SlangWord {
                     }
 
                 } else if (option == 2) {
-                    System.out.println("Enter a meaning word:");
-                    String meaning = scanner.next();
-                    Set<String> keys = slangManager.slangMap.keySet();
-                    for (String key : keys) {
-                        Pair pair = slangManager.slangMap.get(key);
-                        if (pair.meaning.equals(meaning)) {
-                            System.out.println(key + ": " + pair.meaning);
-                            history.add(pair);
+                    System.out.println("1. Normal search\n2. Advanced search");
+                    int searchOption = scanner.nextInt();
+                    if (searchOption == 1) {
+                        scanner = new Scanner(System.in);
+                        System.out.println("Enter a meaning word:");
+                        String meaning = scanner.nextLine();
+                        Set<String> keys = slangManager.slangMap.keySet();
+                        for (String key : keys) {
+                            Pair pair = slangManager.slangMap.get(key);
+                            if (pair.meaning.equals(meaning)) {
+                                System.out.println(key + ": " + pair.meaning);
+                                history.add(pair);
+                            }
                         }
+                    } else {
+                        System.out.println("Enter a meaning:");
+                        scanner= new Scanner(System.in);
+                        String meaning = scanner.nextLine();
+                        AdvancedSearchByMeaning(meaning);
                     }
+                   
                 } else if (option == 3) {
                     System.out.println("History:");
                     for (Pair pair : history) {
@@ -157,11 +168,56 @@ class SlangWord {
                         System.out.println("Wrong!");
                     }
                 }
+                System.out.println("Press enter to continue");
+                try {
+                    System.in.read();
+                } catch (Exception e) {
+                }
             }
         }
 
     }
 
+    private static void AdvancedSearchByMeaning(String meaning) {
+        Set<String> keys = slangMap.keySet();
+        List<Pair> list = new ArrayList<>();
+        for (String key : keys) {
+            Pair pair = slangMap.get(key);
+            int levenshtein = getSumLevenshtein(pair.meaning, meaning);
+            if (  levenshtein <= 100) {
+               pair.levenshtein = levenshtein;
+                list.add(pair);
+            }
+        }
+        list.sort((p1, p2) -> p1.levenshtein - p2.levenshtein);
+        System.out.println("Did you mean:");
+        for(int i =0 ; i< 3 ; i++){
+           try{
+            Pair pair = list.get(i);
+            System.out.println(pair.word + ": " + pair.meaning);
+           }catch(Exception e){
+               break;
+           }
+        }
+    }
+    public static int getSumLevenshtein(String word1, String word2) {
+        int sum = 0;
+        var word1Array = word1.split(" ");
+        var word2Array = word2.split(" ");
+        for (int i = 0; i < (word1Array.length>word2Array.length?word1Array.length:word2Array.length); i++) {
+           try{
+            sum += (i)*Levenshtein.levenshtein(word1Array[i], word2Array[i], false);
+           }catch(Exception e){
+               if(word1Array.length>word2Array.length){
+                   sum += (i)*word1Array[i].length();
+                }else{
+                     sum += (i)*word2Array[i].length();
+                 }
+           }
+        }
+
+        return sum;
+    }
     public static void getSlangWords() throws IOException {
         // Open the file
         FileInputStream fstream = new FileInputStream("slang.txt");
@@ -176,7 +232,7 @@ class SlangWord {
             try {
                 pair.word = parts[0];
                 pair.meaning = parts[1];
-                System.out.println(pair.word + "has meaning " + pair.meaning);
+                System.out.println(pair.word + " has meaning " + pair.meaning);
                 slangMap.put(pair.word, pair);
                 if (prev != null) {
                     prev.nextKey = pair.word;
