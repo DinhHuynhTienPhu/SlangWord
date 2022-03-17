@@ -272,7 +272,7 @@ class SlangWord {
         result.add(mostSimilar);
         result.add(slangMap.get(mostSimilar.nextKey));
         result.add(slangMap.get(mostSimilar.previousKey));
-
+        //print out the result
         System.out.println("Did you mean:");
         for (Pair pair : result) {
             System.out.println(pair.word + ": " + pair.meaning);
