@@ -117,9 +117,14 @@ class SlangWord {
                     if (pair == null) {
                         System.out.println("No such word");
                     } else {
-                        slangMap.remove(slang);
-                        listSorted.remove(pair);
-                        System.out.println("Deleted successfully");
+                        System.out.println("Are you sure to delete this word? (y/n)");
+                        String confirm = scanner.next();
+                        if (confirm.equals("y")) {
+                            slangMap.remove(slang);
+                            listSorted.remove(pair);
+                            System.out.println("Deleted successfully");
+                        }
+                       
                     }
                 } else if (option == 7) {
                     slangMap.clear();
