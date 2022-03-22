@@ -256,7 +256,7 @@ class SlangWord {
             try {
                 pair.word = parts[0];
                 pair.meaning = parts[1];
-                System.out.println(pair.word + " has meaning " + pair.meaning);
+               // System.out.println(pair.word + " has meaning " + pair.meaning);
                 slangMap.put(pair.word, pair);
                 listSorted.add(pair);
                 if (prev != null) {
