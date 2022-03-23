@@ -9,7 +9,8 @@ class SlangWord {
     static List<Pair> listSorted = new ArrayList<Pair>();
 
     public static void main(String[] args) throws IOException {
-
+        //get java version
+        System.out.println("Java version: " + System.getProperty("java.version"));
         System.out.println("Load from: \n1. slang.txt (original file)\n2. slang_edited.txt");
         Scanner scanner2 = new Scanner(System.in);
         int optionz = scanner2.nextInt();
